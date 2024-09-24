@@ -1,7 +1,7 @@
 #include <widgets/components/base-graphicsview.h>
 #include <QScrollBar>
 #include <QPainterPath>
-#include <QGraphicsRectitem>
+#include <QGraphicsRectItem>
 
 #include <QDebug>
 

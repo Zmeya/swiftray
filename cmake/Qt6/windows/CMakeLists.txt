@@ -20,9 +20,9 @@ endif()
 # Setup include path
 get_filename_component(SRC_DIR "src" REALPATH)
 include_directories(
-  third_party
-  ${SRC_DIR}
-  ${CMAKE_BINARY_DIR} # For cmake generated files, e.g. config.h
+	third_party
+	${SRC_DIR}
+	${CMAKE_BINARY_DIR} # For cmake generated files, e.g. config.h
 )
 
 # ==== Find dependency packages ====
@@ -37,34 +37,34 @@ find_package(Poppler REQUIRED)
 
 # ref: https://github.com/freeorion/freeorion/blob/master/CMakeLists.txt
 set_property(DIRECTORY APPEND
-    PROPERTY COMPILE_DEFINITIONS
-  $<$<VERSION_EQUAL:${Boost_MAJOR_VERSION}.${Boost_MINOR_VERSION},1.81>:BOOST_PHOENIX_STL_TUPLE_H_>
+	PROPERTY COMPILE_DEFINITIONS
+	$<$<VERSION_EQUAL:${Boost_MAJOR_VERSION}.${Boost_MINOR_VERSION},1.81>:BOOST_PHOENIX_STL_TUPLE_H_>
 )
 
 # ==== Generate source files with contents filled by cmake ====
 # NOTE: This should be after all ws_find_package() function calls
 configure_file(${CMAKE_SOURCE_DIR}/cmakeconfig.h.in ${CMAKE_BINARY_DIR}/config.h)
 foreach( _cfg_file ${CFG_OUT_FILES} )
-  configure_file( ${CMAKE_SOURCE_DIR}/${_cfg_file}.in ${CMAKE_BINARY_DIR}/${_cfg_file} @ONLY )
+	configure_file( ${CMAKE_SOURCE_DIR}/${_cfg_file}.in ${CMAKE_BINARY_DIR}/${_cfg_file} @ONLY )
 endforeach()
 
 # ==== General included headers ====    
 include_directories(
-  ${Qt6Gui_PRIVATE_INCLUDE_DIRS}
-  ${Qt6Svg_PRIVATE_INCLUDE_DIRS}
-  ${Qt6Widgets_PRIVATE_INCLUDE_DIRS}
-  ${OpenCV_INCLUDE_DIRS}
+	${Qt6Gui_PRIVATE_INCLUDE_DIRS}
+	${Qt6Svg_PRIVATE_INCLUDE_DIRS}
+	${Qt6Widgets_PRIVATE_INCLUDE_DIRS}
+	${OpenCV_INCLUDE_DIRS}
 )
 
 # ==== Set Bundle properties and add executable target ====
 add_executable(${PROJECT_NAME} 
-  WIN32 # Make it a GUI app instead of console app
-  ${SRC_DIR}/main.cpp 
-  ${CMAKE_BINARY_DIR}/resources/win.rc)
+	WIN32 # Make it a GUI app instead of console app
+	${SRC_DIR}/main.cpp 
+	${CMAKE_BINARY_DIR}/resources/win.rc)
 
 target_sources(${PROJECT_NAME} PRIVATE 
-  "qml.qrc" 
-  "sparkle.qrc" 
+	"qml.qrc" 
+	"sparkle.qrc" 
 )
 
 # ==== Subdirectory sources ====
@@ -72,50 +72,50 @@ add_subdirectory(src)
 add_subdirectory(third_party)
 add_library(third_party_libs INTERFACE)
 target_link_libraries(third_party_libs INTERFACE
-  clipper
-  QxPotrace
-  libdxfrw
-  liblcs
-  sentry::sentry)
+	clipper
+	QxPotrace
+	libdxfrw
+	liblcs
+	sentry::sentry)
 
 list (APPEND THIRD_PARTY_EXECS ${VCPKG_INSTALLED_DIR}/${VCPKG_TARGET_TRIPLET}/tools/sentry-native/crashpad_handler.exe)
 
 # ==== Include and linked libraries ====
 target_link_libraries(${PROJECT_NAME} PRIVATE
-  Qt::Core Qt::Quick Qt::QuickWidgets Qt::OpenGL Qt::Gui Qt::Svg Qt::Widgets Qt::WebSockets Qt::SerialPort Qt::QuickControls2 Qt6::Core5Compat Qt6::OpenGLWidgets
-  opencv_core
-  opencv_imgproc
-  opencv_flann
-  third_party_libs
-  ${WINSPARKLE_LIBRARIES}
+	Qt::Core Qt::Quick Qt::QuickWidgets Qt::OpenGL Qt::Gui Qt::Svg Qt::Widgets Qt::WebSockets Qt::SerialPort Qt::QuickControls2 Qt6::Core5Compat Qt6::OpenGLWidgets
+	opencv_core
+	opencv_imgproc
+	opencv_flann
+	third_party_libs
+	${WINSPARKLE_LIBRARIES}
 )
 
 target_include_directories(${PROJECT_NAME} PRIVATE 
-  ${WINSPARKLE_INCLUDE_DIRS}
-  ${CONAN_INCLUDE_DIRES}
-  ${ICONV_INCLUDE_DIR}
+	${WINSPARKLE_INCLUDE_DIRS}
+	${CONAN_INCLUDE_DIRES}
+	${ICONV_INCLUDE_DIR}
 )
 
 if (WINSPARKLE_FOUND)
-  list (APPEND THIRD_PARTY_DLLS "${WINSPARKLE_DLL_DIR}/${WINSPARKLE_DLL}")
+	list (APPEND THIRD_PARTY_DLLS "${WINSPARKLE_DLL_DIR}/${WINSPARKLE_DLL}")
 endif()
 
 
 # ==== Clone third-party DLLs and executables ====
 if (THIRD_PARTY_DLLS)
-  add_custom_command(
-    TARGET ${PROJECT_NAME} POST_BUILD
-    COMMAND ${CMAKE_COMMAND} -E copy_if_different 
-    ${THIRD_PARTY_DLLS}
-    ${CMAKE_BINARY_DIR}/bin
-  )
+	add_custom_command(
+		TARGET ${PROJECT_NAME} POST_BUILD
+		COMMAND ${CMAKE_COMMAND} -E copy_if_different 
+		${THIRD_PARTY_DLLS}
+		${CMAKE_BINARY_DIR}/bin
+	)
 endif(THIRD_PARTY_DLLS)
 
 if (THIRD_PARTY_EXECS)
-  add_custom_command(
-    TARGET ${PROJECT_NAME}  POST_BUILD
-    COMMAND ${CMAKE_COMMAND} -E copy_if_different 
-    ${THIRD_PARTY_EXECS}
-    ${CMAKE_BINARY_DIR}/bin
-  )
+	add_custom_command(
+		TARGET ${PROJECT_NAME}  POST_BUILD
+		COMMAND ${CMAKE_COMMAND} -E copy_if_different 
+		${THIRD_PARTY_EXECS}
+		${CMAKE_BINARY_DIR}/bin
+	)
 endif(THIRD_PARTY_EXECS)

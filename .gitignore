@@ -33,3 +33,8 @@ DLLs/*
 *.exe
 python*.dll
 out-old/*
+
+
+Build/
+Log/
+*.user
